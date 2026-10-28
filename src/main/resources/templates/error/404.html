@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="sk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nenájdené')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="page page--narrow">
+	<div class="card notfound">
+		<p class="eyebrow">Chyba 404</p>
+		<h1>Tu nikto nepracuje</h1>
+		<p class="muted">Hľadaný zamestnanec alebo stránka neexistuje.</p>
+		<a class="btn btn--primary" th:href="@{/employees}">Späť na zoznam</a>
+	</div>
+</main>
+</body>
+</html>

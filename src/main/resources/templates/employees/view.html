@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="sk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${employee.firstName + ' ' + employee.lastName})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="page page--narrow">
+	<div th:replace="~{fragments/layout :: flash}"></div>
+
+	<a class="back" th:href="@{/employees}">
+		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+		Späť na zoznam
+	</a>
+
+	<article class="card profile">
+		<div class="profile__hero">
+			<span class="avatar avatar--lg" th:classappend="'tone-' + ${employee.id % 5}"
+				  th:text="${employee.initials}">JN</span>
+			<div>
+				<h1 th:text="${employee.firstName + ' ' + employee.lastName}">Jozef Novák</h1>
+				<p class="profile__role">
+					<span th:text="${employee.jobTitle}">Software Engineer</span>
+					<span class="badge" th:classappend="'type-' + ${employee.fullTime}"
+						  th:text="${employmentTypes[employee.fullTime]}">Full-time</span>
+				</p>
+			</div>
+		</div>
+
+		<dl class="details">
+			<div>
+				<dt>Meno</dt>
+				<dd th:text="${employee.firstName}">Jozef</dd>
+			</div>
+			<div>
+				<dt>Priezvisko</dt>
+				<dd th:text="${employee.lastName}">Novák</dd>
+			</div>
+			<div>
+				<dt>Dátum narodenia</dt>
+				<dd th:text="${#temporals.format(employee.birthDate, 'dd. MM. yyyy')}">15. 04. 1992</dd>
+			</div>
+			<div>
+				<dt>Email</dt>
+				<dd><a th:href="'mailto:' + ${employee.email}" th:text="${employee.email}">jozef.novak@ukf.sk</a></dd>
+			</div>
+			<div>
+				<dt>Telefón</dt>
+				<dd><a th:href="'tel:' + ${employee.phone}" th:text="${employee.phone}">+421901234567</a></dd>
+			</div>
+			<div>
+				<dt>Plat</dt>
+				<dd th:text="${employee.salary != null}
+						? ${#numbers.formatDecimal(employee.salary, 1, 'WHITESPACE', 0, 'COMMA')} + ' €'
+						: 'neuvedený'">2 000 €</dd>
+			</div>
+			<div>
+				<dt>Pracovná pozícia</dt>
+				<dd th:text="${employee.jobTitle}">Software Engineer</dd>
+			</div>
+			<div>
+				<dt>Typ úväzku</dt>
+				<dd th:text="${employmentTypes[employee.fullTime]}">Full-time</dd>
+			</div>
+		</dl>
+
+		<footer class="card__footer">
+			<a class="btn btn--ghost" th:href="@{/employees}">Späť na zoznam</a>
+			<div class="spacer"></div>
+			<button type="button" class="btn btn--danger-soft"
+					th:attr="data-delete-url=@{'/employees/' + ${employee.id} + '/delete'},data-delete-name=${employee.firstName + ' ' + employee.lastName}">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+				Vymazať
+			</button>
+			<a class="btn btn--primary" th:href="@{'/employees/' + ${employee.id} + '/edit'}">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4ZM13.5 6.5l4 4"/></svg>
+				Upraviť
+			</a>
+		</footer>
+	</article>
+</main>
+
+<th:block th:replace="~{fragments/layout :: deleteDialog}"></th:block>
+</body>
+</html>

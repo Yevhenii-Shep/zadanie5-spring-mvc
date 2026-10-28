@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="sk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${employee.id != null} ? 'Upraviť zamestnanca' : 'Nový zamestnanec')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="page page--narrow">
+	<a class="back" th:href="${employee.id != null} ? @{/employees/{id}(id=${employee.id})} : @{/employees}">
+		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+		Späť
+	</a>
+
+	<section class="page-head page-head--tight">
+		<div>
+			<p class="eyebrow" th:text="${employee.id != null} ? 'Úprava záznamu' : 'Nový záznam'">Nový záznam</p>
+			<h1 th:text="${employee.id != null} ? 'Upraviť zamestnanca' : 'Pridať zamestnanca'">Pridať zamestnanca</h1>
+		</div>
+	</section>
+
+	<!-- Jedna sablona pre pridanie (POST /employees) aj upravu (POST /employees/{id}) -->
+	<form class="card form" novalidate
+		  th:action="${employee.id != null} ? @{/employees/{id}(id=${employee.id})} : @{/employees}"
+		  th:object="${employee}" method="post">
+
+		<fieldset class="form__section">
+			<legend>Osobné údaje</legend>
+			<div class="grid">
+				<div class="field" th:classappend="${#fields.hasErrors('firstName')} ? 'has-error'">
+					<label for="firstName">Meno <span class="req">*</span></label>
+					<input type="text" id="firstName" th:field="*{firstName}" placeholder="napr. Jozef" maxlength="255" required>
+					<small class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></small>
+				</div>
+				<div class="field" th:classappend="${#fields.hasErrors('lastName')} ? 'has-error'">
+					<label for="lastName">Priezvisko <span class="req">*</span></label>
+					<input type="text" id="lastName" th:field="*{lastName}" placeholder="napr. Novák" maxlength="255" required>
+					<small class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></small>
+				</div>
+				<div class="field" th:classappend="${#fields.hasErrors('birthDate')} ? 'has-error'">
+					<label for="birthDate">Dátum narodenia <span class="req">*</span></label>
+					<input type="date" id="birthDate" th:field="*{birthDate}" required>
+					<small class="error" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></small>
+				</div>
+			</div>
+		</fieldset>
+
+		<fieldset class="form__section">
+			<legend>Kontakt</legend>
+			<div class="grid">
+				<div class="field" th:classappend="${#fields.hasErrors('email')} ? 'has-error'">
+					<label for="email">Email <span class="req">*</span></label>
+					<input type="email" id="email" th:field="*{email}" placeholder="meno.priezvisko@firma.sk" maxlength="255" required>
+					<small class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+				</div>
+				<div class="field" th:classappend="${#fields.hasErrors('phone')} ? 'has-error'">
+					<label for="phone">Telefón <span class="req">*</span></label>
+					<input type="tel" id="phone" th:field="*{phone}" placeholder="+421901234567" maxlength="15" required>
+					<small class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
+				</div>
+			</div>
+		</fieldset>
+
+		<fieldset class="form__section">
+			<legend>Pracovné zaradenie</legend>
+			<div class="grid">
+				<div class="field" th:classappend="${#fields.hasErrors('jobTitle')} ? 'has-error'">
+					<label for="jobTitle">Pracovná pozícia <span class="req">*</span></label>
+					<!-- moznosti sa dynamicky nacitaju z application.properties -->
+					<select id="jobTitle" th:field="*{jobTitle}" required>
+						<option value="">Vyberte pozíciu</option>
+						<option th:each="tempJobTitle : ${jobTitles}"
+								th:value="${tempJobTitle}"
+								th:text="${tempJobTitle}">Software Engineer</option>
+					</select>
+					<small class="error" th:if="${#fields.hasErrors('jobTitle')}" th:errors="*{jobTitle}"></small>
+				</div>
+				<div class="field" th:classappend="${#fields.hasErrors('salary')} ? 'has-error'">
+					<label for="salary">Mesačný plat <span class="optional">(nepovinné)</span></label>
+					<div class="input-suffix">
+						<input type="number" id="salary" th:field="*{salary}" placeholder="napr. 1800" min="0" step="1">
+						<span>€</span>
+					</div>
+					<small class="error" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}"></small>
+				</div>
+			</div>
+
+			<div class="field" th:classappend="${#fields.hasErrors('fullTime')} ? 'has-error'">
+				<span class="label">Typ úväzku <span class="req">*</span></span>
+				<!-- radio buttony sa dynamicky vytvoria z application.properties -->
+				<div class="segmented" role="radiogroup">
+					<label class="segmented__option" th:each="type : ${employmentTypes}">
+						<input type="radio" th:field="*{fullTime}" th:value="${type.key}" required>
+						<span th:text="${type.value}">Full-time</span>
+					</label>
+				</div>
+				<small class="error" th:if="${#fields.hasErrors('fullTime')}" th:errors="*{fullTime}"></small>
+			</div>
+		</fieldset>
+
+		<footer class="card__footer">
+			<a class="btn btn--ghost" th:href="@{/employees}">Späť na zoznam</a>
+			<div class="spacer"></div>
+			<button type="submit" class="btn btn--primary"
+					th:text="${employee.id != null} ? 'Uložiť zmeny' : 'Pridať zamestnanca'">Pridať zamestnanca</button>
+		</footer>
+	</form>
+</main>
+</body>
+</html>
